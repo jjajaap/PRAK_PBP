@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praktikum PBP 1</title>
+    <h1>Form Data Tambah Product</h1>
+</head>
+
+<style>
+    label {
+        width: 130px;
+        display: inline-block;
+    }
+
+    .line-height {
+        line-height: 1.5;
+    }
+</style>
+
+<body>
+    <form id="productForm" action="">
+        <label for="NamaProduk">Nama Produk :</label>
+        <input type="text" id="NamaProduk" name="NamaProduk" minlength="5" maxlength="30" required>
+        <br><br>
+
+        <label for="Deskripsi">Deskripsi :</label>
+        <textarea id="Deskripsi" name="Deskripsi" minlength="5" maxlength="100" required></textarea>
+        <br><br>
+
+        <label for="Kategori">Kategori :</label>
+        <select id="Kategori" name="Kategori" onchange="updateSubKategori()">
+            <option value="" disabled selected>---Pilih Kategori---</option>
+            <option value="Baju">Baju</option>
+            <option value="Elektronik">Elektronik</option>
+            <option value="Alat Tulis">Alat Tulis</option>
+        </select>
+        <br><br>
+
+        <label for="SubKategori">Sub Kategori</label>
+        <select id="SubKategori" name="SubKategori">
+            <option value="" disabled selected>---Pilih SubKategori---</option>
+        </select>
+        <br><br>
+
+        <label for="HargaSatuan">Harga Satuan</label>
+        <input type="number" id="HargaSatuan" name="HargaSatuan">
+        <br><br>
+
+        <label for="Grosir">Grosir</label>
+        <div>
+            <label>
+                <input type="radio" name="Grosir" value="Ya" required onclick="WajibDiisi(true)">
+                Ya
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="radio" name="Grosir" value="Tidak" required onclick="WajibDiisi(false)">
+                Tidak
+            </label>
+        </div>
+        <br>
+
+        <label for="HargaGrosir">Harga Grosir</label>
+        <input type="number" id="HargaGrosir" name="HargaGrosir">
+        <br><br>
+
+        <label for="JasaKirim">Jasa Kirim</label>
+        <br>
+        <div>
+            <label>
+                <input type="checkbox" name="JasaKirim" value="JNE">
+                JNE
+            </label>
+        </div>
+
+        <div>
+            <label>
+                <input type="checkbox" name="JasaKirim" value="TIKI">
+                TIKI
+            </label>
+        </div>
+
+        <div>
+            <label>
+                <input type="checkbox" name="JasaKirim" value="SiCepat">
+                SiCepat
+            </label>
+        </div>
+
+        <div>
+            <label>
+                <input type="checkbox" name="JasaKirim" value="Ninja Express">
+                Ninja Express
+            </label>
+        </div>
+
+        <div>
+            <label>
+                <input type="checkbox" name="JasaKirim" value="Wahana">
+                Wahana
+            </label>
+        </div>
+        <br><br>
+
+        <div>
+            <label for="fCaptcha">Captcha</label>
+            <input type="text" id="fCaptcha" readonly>
+            <input type="text" id="userCaptcha">
+            <br>
+        </div>
+        <br>
+        <button type="submit">Submit</button>
+        <button type="reset">Reset</button>
+    </form>
+
+    <script>
+        function updateSubKategori() {
+            const SubKategori = document.getElementById('SubKategori');
+            const Kategori = document.getElementById('Kategori').value;
+            SubKategori.innerHTML = '';
+
+            if (Kategori == "Baju") {
+                const options = ['Baju Pria', 'Baju Wanita', 'Baju Anak'];
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.textContent = option;
+                    SubKategori.appendChild(opt);
+                });
+            }
+            else if (Kategori == "Elektronik") {
+                const options = ['Mesin Cuci', 'Kulkas', 'AC'];
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.textContent = option;
+                    SubKategori.appendChild(opt);
+                });
+            }
+            else if (Kategori == "Alat Tulis") {
+                const options = ['Kertas', 'Map', 'Pulpen'];
+                options.forEach(option => {
+                    const opt = document.createElement("option");
+                    opt.textContent = option;
+                    SubKategori.appendChild(opt);
+                });
+            }
+        }
+
+        function WajibDiisi(Wajib) {
+            const HargaGrosir = document.getElementById('HargaGrosir');
+            if (Wajib) {
+                HargaGrosir.setAttribute('required', 'required');
+            }
+            else {
+                HargaGrosir.removeAttribute('required');
+            }
+        }
+
+        function genCaptcha() {
+            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            let captcha = "";
+            for (let i = 0; i < 5; i++) {
+                const isUppercase = Math.random() < 0.5;
+                let charCode;
+                if (isUppercase) {
+                    charCode = Math.floor(Math.random() * 26) + 65; // A-Z
+                }
+                else {
+                    charCode = Math.floor(Math.random() * 26) + 97; // a-z
+                }
+                captcha += String.fromCharCode(charCode);
+            }
+            document.getElementById("fCaptcha").value = captcha;
+            document.getElementById("fCaptcha").disabled = true;
+        }
+
+        window.onload = function () {
+            genCaptcha();
+        }
+
+        document.getElementById('productForm').addEventListener('submit', function (event) {
+            const userCaptcha = document.getElementById('userCaptcha').value;
+            const generatedCaptcha = document.getElementById('fCaptcha').value;
+            if (userCaptcha !== generatedCaptcha) {
+                alert('CAPTCHA tidak sesuai. Silakan coba lagi.');
+                event.preventDefault();
+                return;
+            }
+            const checkboxes = document.querySelectorAll('input[name="JasaKirim"]:checked');
+            if (checkboxes.length < 3) {
+                alert('Pilih minimal 3 jasa kirim.');
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
